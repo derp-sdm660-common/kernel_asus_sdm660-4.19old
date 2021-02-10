@@ -552,12 +552,14 @@ static int ipa_generate_flt_hw_tbl_v1_1(enum ipa_ip_type ip,
 		IPAERR("flt tbl empty ip=%d\n", ip);
 		goto error;
 	}
-	mem->base = dma_zalloc_coherent(ipa_ctx->pdev, mem->size,
+	mem->base = dma_alloc_coherent(ipa_ctx->pdev, mem->size,
 			&mem->phys_base, GFP_KERNEL);
 	if (!mem->base) {
 		IPAERR("fail to alloc DMA buff of size %d\n", mem->size);
 		goto error;
 	}
+
+	memset(mem->base, 0, mem->size);
 
 	/* build the flt tbl in the DMA buffer to submit to IPA HW */
 	base = hdr = (u8 *)mem->base;
@@ -779,13 +781,14 @@ static int ipa_generate_flt_hw_tbl_v2(enum ipa_ip_type ip,
 	mem->size = IPA_HW_TABLE_ALIGNMENT(mem->size);
 
 	if (mem->size) {
-		mem->base = dma_zalloc_coherent(ipa_ctx->pdev, mem->size,
+		mem->base = dma_alloc_coherent(ipa_ctx->pdev, mem->size,
 				&mem->phys_base, GFP_KERNEL);
 		if (!mem->base) {
 			IPAERR("fail to alloc DMA buff of size %d\n",
 					mem->size);
 			goto body_err;
 		}
+		memset(mem->base, 0, mem->size);
 	}
 
 	if (ipa_generate_flt_hw_tbl_common(ip, mem->base, head1->base,

@@ -634,7 +634,8 @@ static int wwan_add_ul_flt_rule_to_ipa(void)
 	if (!param)
 		return -ENOMEM;
 
-	req = kzalloc(sizeof(struct ipa_fltr_installed_notif_req_msg_v01),
+	req = (struct ipa_fltr_installed_notif_req_msg_v01 *)
+		kzalloc(sizeof(struct ipa_fltr_installed_notif_req_msg_v01),
 			GFP_KERNEL);
 	if (!req) {
 		kfree(param);
@@ -914,7 +915,7 @@ int wwan_update_mux_channel_prop(void)
 	/* install UL filter rules */
 	if (egress_set) {
 		if (ipa_qmi_ctx &&
-			!ipa_qmi_ctx->modem_cfg_emb_pipe_flt) {
+			ipa_qmi_ctx->modem_cfg_emb_pipe_flt == false) {
 			IPAWANDBG("setup UL filter rules\n");
 			if (a7_ul_flt_set) {
 				IPAWANDBG("del previous UL filter rules\n");
@@ -1609,7 +1610,8 @@ static int ipa_wwan_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			if (num_q6_rule != 0) {
 				/* already got Q6 UL filter rules*/
 				if (ipa_qmi_ctx &&
-					!ipa_qmi_ctx->modem_cfg_emb_pipe_flt) {
+					ipa_qmi_ctx->modem_cfg_emb_pipe_flt
+					== false) {
 					/* protect num_q6_rule */
 					mutex_lock(&add_mux_channel_lock);
 					rc = wwan_add_ul_flt_rule_to_ipa();
@@ -2243,7 +2245,7 @@ static int ipa_wwan_remove(struct platform_device *pdev)
 	ipa_del_dflt_wan_rt_tables();
 	ipa_del_a7_qmap_hdr();
 	ipa_del_mux_qmap_hdrs();
-	if (ipa_qmi_ctx && !ipa_qmi_ctx->modem_cfg_emb_pipe_flt)
+	if (ipa_qmi_ctx && ipa_qmi_ctx->modem_cfg_emb_pipe_flt == false)
 		wwan_del_ul_flt_rule_to_ipa();
 	ipa_cleanup_deregister_intf();
 	atomic_set(&is_initialized, 0);
@@ -2339,6 +2341,7 @@ static const struct dev_pm_ops rmnet_ipa_pm_ops = {
 static struct platform_driver rmnet_ipa_driver = {
 	.driver = {
 		.name = "rmnet_ipa",
+		.owner = THIS_MODULE,
 		.pm = &rmnet_ipa_pm_ops,
 		.of_match_table = rmnet_ipa_dt_match,
 	},
@@ -2467,7 +2470,7 @@ static void rmnet_ipa_get_stats_and_update(bool reset)
 	memset(resp, 0, sizeof(struct ipa_get_data_stats_resp_msg_v01));
 
 	req.ipa_stats_type = QMI_IPA_STATS_TYPE_PIPE_V01;
-	if (reset) {
+	if (reset == true) {
 		req.reset_stats_valid = true;
 		req.reset_stats = true;
 		IPAWANERR("Get the latest pipe-stats and reset it\n");
@@ -3112,7 +3115,7 @@ void ipa_broadcast_quota_reach_ind(u32 mux_id,
 		}
 	}
 
-	res = scnprintf(alert_msg, IPA_QUOTA_REACH_ALERT_MAX_SIZE,
+	res = snprintf(alert_msg, IPA_QUOTA_REACH_ALERT_MAX_SIZE,
 			"ALERT_NAME=%s", "quotaReachedAlert");
 	if (res >= IPA_QUOTA_REACH_ALERT_MAX_SIZE) {
 		IPAWANERR("message too long (%d)", res);
@@ -3121,10 +3124,10 @@ void ipa_broadcast_quota_reach_ind(u32 mux_id,
 
 	/* posting msg for L-release for CNE */
 	if (upstream_type == IPA_UPSTEAM_MODEM) {
-		res = scnprintf(iface_name_l, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
+		res = snprintf(iface_name_l, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
 			"UPSTREAM=%s", mux_channel[index].vchannel_name);
 	} else {
-		res = scnprintf(iface_name_l, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
+		res = snprintf(iface_name_l, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
 			"UPSTREAM=%s", IPA_UPSTEAM_WLAN_IFACE_NAME);
 	}
 	if (res >= IPA_QUOTA_REACH_IF_NAME_MAX_SIZE) {
@@ -3134,10 +3137,10 @@ void ipa_broadcast_quota_reach_ind(u32 mux_id,
 
 	/* posting msg for M-release for CNE */
 	if (upstream_type == IPA_UPSTEAM_MODEM) {
-		res = scnprintf(iface_name_m, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
+		res = snprintf(iface_name_m, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
 			"INTERFACE=%s", mux_channel[index].vchannel_name);
 	} else {
-		res = scnprintf(iface_name_m, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
+		res = snprintf(iface_name_m, IPA_QUOTA_REACH_IF_NAME_MAX_SIZE,
 			"INTERFACE=%s", IPA_UPSTEAM_WLAN_IFACE_NAME);
 	}
 	if (res >= IPA_QUOTA_REACH_IF_NAME_MAX_SIZE) {

@@ -257,13 +257,13 @@ int ipa2_allocate_nat_device(struct ipa_ioc_nat_alloc_mem *mem)
 		goto bail;
 	}
 
-	if (!nat_ctx->is_dev) {
+	if (nat_ctx->is_dev != true) {
 		IPAERR("Nat device not created successfully during boot up\n");
 		result = -EPERM;
 		goto bail;
 	}
 
-	if (nat_ctx->is_dev_init) {
+	if (nat_ctx->is_dev_init == true) {
 		IPAERR("Device already init\n");
 		result = 0;
 		goto bail;
@@ -277,7 +277,7 @@ int ipa2_allocate_nat_device(struct ipa_ioc_nat_alloc_mem *mem)
 	}
 
 	if (mem->size <= 0 ||
-			nat_ctx->is_dev_init) {
+			nat_ctx->is_dev_init == true) {
 		IPAERR_RL("Invalid Parameters or device is already init\n");
 		result = -EPERM;
 		goto bail;
@@ -733,11 +733,14 @@ int ipa2_nat_dma_cmd(struct ipa_ioc_nat_dma_cmd *dma)
 	}
 
 bail:
-	kfree(cmd);
+	if (cmd != NULL)
+		kfree(cmd);
 
-	kfree(desc);
+	if (desc != NULL)
+		kfree(desc);
 
-	kfree(reg_write_nop);
+	if (reg_write_nop != NULL)
+		kfree(reg_write_nop);
 
 	return ret;
 }

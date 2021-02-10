@@ -720,7 +720,7 @@ static void ipa_q6_clnt_quota_reached_ind_cb(struct qmi_handle *handle,
 
 	IPAWANDBG("Quota reached indication on qmux(%d) Mbytes(%lu)\n",
 		qmi_ind->apn.mux_id,
-		(unsigned long) qmi_ind->apn.num_Mbytes);
+		(unsigned long int) qmi_ind->apn.num_Mbytes);
 	ipa_broadcast_quota_reach_ind(qmi_ind->apn.mux_id,
 		IPA_UPSTEAM_MODEM);
 }

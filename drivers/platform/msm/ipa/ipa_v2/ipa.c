@@ -360,7 +360,7 @@ static int ipa2_active_clients_log_init(void)
 	hash_init(ipa_ctx->ipa2_active_clients_logging.htable);
 	atomic_notifier_chain_register(&panic_notifier_list,
 			&ipa2_active_clients_panic_blk);
-	ipa_ctx->ipa2_active_clients_logging.log_rdy = true;
+	ipa_ctx->ipa2_active_clients_logging.log_rdy = 1;
 
 	return 0;
 
@@ -379,7 +379,7 @@ void ipa2_active_clients_log_clear(void)
 
 static void ipa2_active_clients_log_destroy(void)
 {
-	ipa_ctx->ipa2_active_clients_logging.log_rdy = false;
+	ipa_ctx->ipa2_active_clients_logging.log_rdy = 0;
 	kfree(active_clients_table_buf);
 	active_clients_table_buf = NULL;
 	kfree(ipa_ctx->ipa2_active_clients_logging.log_buffer[0]);
@@ -653,7 +653,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_nat_dma_cmd) +
 		   pre_entry * sizeof(struct ipa_ioc_nat_dma_one);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -701,7 +701,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_add_hdr) +
 		   pre_entry * sizeof(struct ipa_hdr_add);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -741,7 +741,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_del_hdr) +
 		   pre_entry * sizeof(struct ipa_hdr_del);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -781,7 +781,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_add_rt_rule) +
 		   pre_entry * sizeof(struct ipa_rt_rule_add);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -822,7 +822,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_mdfy_rt_rule) +
 		   pre_entry * sizeof(struct ipa_rt_rule_mdfy);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -862,7 +862,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_del_rt_rule) +
 		   pre_entry * sizeof(struct ipa_rt_rule_del);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -901,7 +901,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_add_flt_rule) +
 		   pre_entry * sizeof(struct ipa_flt_rule_add);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -942,7 +942,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_del_flt_rule) +
 		   pre_entry * sizeof(struct ipa_flt_rule_del);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -982,7 +982,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_mdfy_flt_rule) +
 		   pre_entry * sizeof(struct ipa_flt_rule_mdfy);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1119,7 +1119,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			header)->num_tx_props;
 		pyld_sz = sz + pre_entry *
 			sizeof(struct ipa_ioc_tx_intf_prop);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1165,7 +1165,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			header)->num_rx_props;
 		pyld_sz = sz + pre_entry *
 			sizeof(struct ipa_ioc_rx_intf_prop);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1210,7 +1210,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			header)->num_ext_props;
 		pyld_sz = sz + pre_entry *
 			sizeof(struct ipa_ioc_ext_intf_prop);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1248,7 +1248,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		   ((struct ipa_msg_meta *)header)->msg_len;
 		pyld_sz = sizeof(struct ipa_msg_meta) +
 		   pre_entry;
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1388,7 +1388,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_add_hdr_proc_ctx) +
 		   pre_entry * sizeof(struct ipa_hdr_proc_ctx_add);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1427,7 +1427,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		pyld_sz =
 		   sizeof(struct ipa_ioc_del_hdr_proc_ctx) +
 		   pre_entry * sizeof(struct ipa_hdr_proc_ctx_del);
-		param = memdup_user((const void __user *)arg, pyld_sz);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1459,7 +1459,7 @@ static long ipa_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	case IPA_IOC_GET_HW_VERSION:
 		pyld_sz = sizeof(enum ipa_hw_type);
-		param = kmemdup(&ipa_ctx->ipa_hw_type, pyld_sz, GFP_KERNEL);
+		param = kzalloc(pyld_sz, GFP_KERNEL);
 		if (!param) {
 			retval = -ENOMEM;
 			break;
@@ -1637,12 +1637,14 @@ static int ipa_init_smem_region(int memory_region_size,
 	memset(&mem, 0, sizeof(mem));
 
 	mem.size = memory_region_size;
-	mem.base = dma_zalloc_coherent(ipa_ctx->pdev, mem.size,
+	mem.base = dma_alloc_coherent(ipa_ctx->pdev, mem.size,
 		&mem.phys_base, GFP_KERNEL);
 	if (!mem.base) {
 		IPAERR("failed to alloc DMA buff of size %d\n", mem.size);
 		return -ENOMEM;
 	}
+
+	memset(mem.base, 0, mem.size);
 
 	cmd = kzalloc(sizeof(*cmd),
 		flag);
@@ -2210,12 +2212,13 @@ int _ipa_init_sram_v2(void)
 	iounmap(ipa_sram_mmio);
 
 	mem.size = IPA_STATUS_CLEAR_SIZE;
-	mem.base = dma_zalloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
+	mem.base = dma_alloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
 			GFP_KERNEL);
 	if (!mem.base) {
 		IPAERR("fail to alloc DMA buff of size %d\n", mem.size);
 		return -ENOMEM;
 	}
+	memset(mem.base, 0, mem.size);
 
 	cmd = kzalloc(sizeof(*cmd), flag);
 	if (cmd == NULL) {
@@ -2332,12 +2335,13 @@ int _ipa_init_hdr_v2(void)
 	int rc = 0;
 
 	mem.size = IPA_MEM_PART(modem_hdr_size) + IPA_MEM_PART(apps_hdr_size);
-	mem.base = dma_zalloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
+	mem.base = dma_alloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
 			GFP_KERNEL);
 	if (!mem.base) {
 		IPAERR("fail to alloc DMA buff of size %d\n", mem.size);
 		return -ENOMEM;
 	}
+	memset(mem.base, 0, mem.size);
 
 	cmd = kzalloc(sizeof(*cmd), flag);
 	if (cmd == NULL) {
@@ -2377,12 +2381,13 @@ int _ipa_init_hdr_v2_5(void)
 	gfp_t flag = GFP_KERNEL | (ipa_ctx->use_dma_zone ? GFP_DMA : 0);
 
 	mem.size = IPA_MEM_PART(modem_hdr_size) + IPA_MEM_PART(apps_hdr_size);
-	mem.base = dma_zalloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
+	mem.base = dma_alloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
 		GFP_KERNEL);
 	if (!mem.base) {
 		IPAERR("fail to alloc DMA buff of size %d\n", mem.size);
 		return -ENOMEM;
 	}
+	memset(mem.base, 0, mem.size);
 
 	cmd = kzalloc(sizeof(*cmd), flag);
 	if (cmd == NULL) {
@@ -2416,12 +2421,13 @@ int _ipa_init_hdr_v2_5(void)
 
 	mem.size = IPA_MEM_PART(modem_hdr_proc_ctx_size) +
 		IPA_MEM_PART(apps_hdr_proc_ctx_size);
-	mem.base = dma_zalloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
+	mem.base = dma_alloc_coherent(ipa_ctx->pdev, mem.size, &mem.phys_base,
 		GFP_KERNEL);
 	if (!mem.base) {
 		IPAERR("fail to alloc DMA buff of size %d\n", mem.size);
 		return -ENOMEM;
 	}
+	memset(mem.base, 0, mem.size);
 	memset(&desc, 0, sizeof(desc));
 
 	dma_cmd = kzalloc(sizeof(*dma_cmd), flag);
@@ -4055,7 +4061,7 @@ static int ipa_init(const struct ipa_plat_drv_res *resource_p,
 	bam_props.options |= SPS_BAM_NO_LOCAL_CLK_GATING;
 	if (ipa_ctx->ipa_hw_mode != IPA_HW_MODE_VIRTUAL)
 		bam_props.options |= SPS_BAM_OPT_IRQ_WAKEUP;
-	if (ipa_ctx->ipa_bam_remote_mode)
+	if (ipa_ctx->ipa_bam_remote_mode == true)
 		bam_props.manage |= SPS_BAM_MGR_DEVICE_REMOTE;
 	if (!ipa_ctx->smmu_s1_bypass)
 		bam_props.options |= SPS_BAM_SMMU_EN;
@@ -4219,7 +4225,7 @@ static int ipa_init(const struct ipa_plat_drv_res *resource_p,
 	ipa_ctx->empty_rt_tbl_mem.size = IPA_ROUTING_RULE_BYTE_SIZE;
 
 	ipa_ctx->empty_rt_tbl_mem.base =
-		dma_zalloc_coherent(ipa_ctx->pdev,
+		dma_alloc_coherent(ipa_ctx->pdev,
 				ipa_ctx->empty_rt_tbl_mem.size,
 				    &ipa_ctx->empty_rt_tbl_mem.phys_base,
 				    GFP_KERNEL);
@@ -4229,6 +4235,8 @@ static int ipa_init(const struct ipa_plat_drv_res *resource_p,
 		result = -ENOMEM;
 		goto fail_apps_pipes;
 	}
+	memset(ipa_ctx->empty_rt_tbl_mem.base, 0,
+			ipa_ctx->empty_rt_tbl_mem.size);
 	IPADBG("empty routing table was allocated in system memory");
 
 	/* setup the A5-IPA pipes */

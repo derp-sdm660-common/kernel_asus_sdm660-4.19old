@@ -243,7 +243,7 @@ static int ipa_connect_allocate_fifo(const struct ipa_connect_params *in,
 			result = sps_setup_bam2bam_fifo(mem_buff_ptr, ofst,
 				fifo_size, 1);
 			WARN_ON(result);
-			*fifo_in_pipe_mem_ptr = true;
+			*fifo_in_pipe_mem_ptr = 1;
 			dma_addr = mem_buff_ptr->phys_base;
 			*fifo_pipe_mem_ofst_ptr = ofst;
 		}
@@ -388,7 +388,7 @@ int ipa2_connect(const struct ipa_connect_params *in,
 	} else {
 		IPADBG("client allocated DESC FIFO\n");
 		ep->connect.desc = in->desc;
-		ep->desc_fifo_client_allocated = true;
+		ep->desc_fifo_client_allocated = 1;
 	}
 	IPADBG("Descriptor FIFO pa=%pa, size=%d\n", &ep->connect.desc.phys_base,
 	       ep->connect.desc.size);
@@ -405,7 +405,7 @@ int ipa2_connect(const struct ipa_connect_params *in,
 	} else {
 		IPADBG("client allocated DATA FIFO\n");
 		ep->connect.data = in->data;
-		ep->data_fifo_client_allocated = true;
+		ep->data_fifo_client_allocated = 1;
 	}
 	IPADBG("Data FIFO pa=%pa, size=%d\n", &ep->connect.data.phys_base,
 	       ep->connect.data.size);
