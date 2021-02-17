@@ -88,7 +88,7 @@
 			};
 			lpg2 {
 				qcom,lpg-chan-id = <2>;
-				qcom,ramp-step-ms = <100>;
+				qcom,ramp-step-ms = <40>;
 				qcom,ramp-pause-hi-count = <2>;
 				qcom,ramp-pause-lo-count = <2>;
 				qcom,ramp-low-index = <0>;
@@ -99,7 +99,7 @@
 
 			lpg3 {
 				qcom,lpg-chan-id = <3>;
-				qcom,ramp-step-ms = <100>;
+				qcom,ramp-step-ms = <40>;
 				qcom,ramp-pause-hi-count = <2>;
 				qcom,ramp-pause-lo-count = <2>;
 				qcom,ramp-low-index = <0>;
